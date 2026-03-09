@@ -2,7 +2,7 @@
   "name": "SHE Blocos",
   "short_name": "SHE",
   "description": "Gerador de códigos de blocos de quartzito",
-  "start_url": "/index.html",
+  "start_url": "/Nome-blocos/index.html",
   "display": "standalone",
   "background_color": "#1a1916",
   "theme_color": "#1a1916",
