@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1a1916">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SHE Blocos">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>SHE — Gerador de Blocos</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+:root {
+–stone: #1a1916;
+–stone-mid: #2e2c28;
+–stone-light: #3d3b36;
+–dust: #c8b89a;
+–dust-light: #e8ddd0;
+–cream: #f5f0e8;
+–gold: #c9a84c;
+–gold-dark: #a8852e;
+–red: #c0392b;
+–green: #27ae60;
+}
+
+- { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+background: var(–stone);
+color: var(–cream);
+font-family: ‘DM Sans’, sans-serif;
+min-height: 100vh;
+min-height: -webkit-fill-available;
+}
+
+/* NAV */
+nav {
+display: flex;
+align-items: center;
+justify-content: space-between;
+padding: 0 24px;
+height: 60px;
+background: var(–stone-mid);
+border-bottom: 1px solid var(–stone-light);
+position: sticky;
+top: 0;
+z-index: 100;
+}
+
+.nav-logo {
+font-family: ‘Bebas Neue’, sans-serif;
+font-size: 26px;
+letter-spacing: 4px;
+color: var(–gold);
+}
+
+.nav-tabs { display: flex; gap: 4px; }
+
+.nav-tab {
+padding: 8px 18px;
+border-radius: 6px;
+border: none;
+background: transparent;
+color: var(–dust);
+font-family: ‘DM Sans’, sans-serif;
+font-size: 13px;
+font-weight: 500;
+letter-spacing: 1px;
+text-transform: uppercase;
+cursor: pointer;
+transition: all 0.2s;
+-webkit-tap-highlight-color: transparent;
+}
+
+.nav-tab:active { opacity: 0.7; }
+.nav-tab.active { background: var(–gold); color: var(–stone); }
+
+/* PAGES */
+.page { display: none; padding: 28px 20px 48px; max-width: 600px; margin: 0 auto; }
+.page.active { display: block; }
+
+/* PAGE HEADER */
+.page-title {
+font-family: ‘Bebas Neue’, sans-serif;
+font-size: 42px;
+letter-spacing: 4px;
+color: var(–dust-light);
+line-height: 1;
+margin-bottom: 4px;
+}
+
+.page-subtitle {
+color: var(–dust);
+font-size: 12px;
+letter-spacing: 2px;
+text-transform: uppercase;
+margin-bottom: 28px;
+}
+
+/* CARD */
+.card {
+background: var(–stone-mid);
+border: 1px solid var(–stone-light);
+border-radius: 12px;
+padding: 22px;
+margin-bottom: 20px;
+}
+
+.card-title {
+font-size: 10px;
+font-weight: 600;
+letter-spacing: 3px;
+text-transform: uppercase;
+color: var(–gold);
+margin-bottom: 18px;
+}
+
+/* GRID */
+.form-grid {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 14px;
+}
+
+.form-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+/* FIELD */
+.field { display: flex; flex-direction: column; gap: 7px; }
+
+.field label {
+font-size: 10px;
+font-weight: 600;
+letter-spacing: 2px;
+text-transform: uppercase;
+color: var(–dust);
+}
+
+.field select,
+.field input[type=“number”],
+.field input[type=“text”] {
+background: var(–stone);
+border: 1px solid var(–stone-light);
+border-radius: 8px;
+color: var(–cream);
+font-family: ‘DM Sans’, sans-serif;
+font-size: 16px;
+padding: 13px 14px;
+outline: none;
+transition: border-color 0.2s;
+appearance: none;
+-webkit-appearance: none;
+width: 100%;
+}
+
+.field select:focus,
+.field input:focus { border-color: var(–gold); }
+.field select option { background: var(–stone-mid); }
+
+/* RESULT BOX */
+.result-box {
+background: var(–stone);
+border: 2px solid var(–gold);
+border-radius: 12px;
+padding: 28px 20px;
+text-align: center;
+}
+
+.result-label {
+font-size: 10px;
+letter-spacing: 3px;
+text-transform: uppercase;
+color: var(–dust);
+margin-bottom: 10px;
+}
+
+.result-code {
+font-family: ‘Bebas Neue’, sans-serif;
+font-size: 64px;
+letter-spacing: 10px;
+color: var(–gold);
+line-height: 1;
+transition: all 0.3s;
+word-break: break-all;
+}
+
+.result-breakdown {
+margin-top: 14px;
+display: flex;
+justify-content: center;
+gap: 6px;
+flex-wrap: wrap;
+}
+
+.breakdown-item {
+background: var(–stone-mid);
+border: 1px solid var(–stone-light);
+border-radius: 6px;
+padding: 5px 10px;
+font-size: 10px;
+color: var(–dust);
+letter-spacing: 1px;
+}
+
+.breakdown-item span {
+color: var(–gold);
+font-family: ‘DM Mono’, monospace;
+font-weight: 500;
+}
+
+.copy-btn {
+margin-top: 18px;
+padding: 14px 32px;
+background: var(–gold);
+color: var(–stone);
+border: none;
+border-radius: 8px;
+font-family: ‘DM Sans’, sans-serif;
+font-size: 13px;
+font-weight: 700;
+letter-spacing: 2px;
+text-transform: uppercase;
+cursor: pointer;
+transition: background 0.2s;
+-webkit-tap-highlight-color: transparent;
+width: 100%;
+}
+
+.copy-btn:active { background: var(–gold-dark); transform: scale(0.98); }
+
+/* ADMIN — QUARRY LIST */
+.quarry-list { display: flex; flex-direction: column; gap: 10px; }
+
+.quarry-item {
+display: flex;
+align-items: center;
+justify-content: space-between;
+background: var(–stone);
+border: 1px solid var(–stone-light);
+border-radius: 10px;
+padding: 14px 16px;
+gap: 8px;
+}
+
+.quarry-info { display: flex; align-items: center; gap: 12px; min-width: 0; }
+
+.quarry-badge {
+font-family: ‘Bebas Neue’, sans-serif;
+font-size: 22px;
+letter-spacing: 2px;
+color: var(–gold);
+width: 30px;
+text-align: center;
+flex-shrink: 0;
+}
+
+.quarry-name {
+font-weight: 500;
+font-size: 14px;
+color: var(–cream);
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+}
+
+.quarry-meta { font-size: 11px; color: var(–dust); margin-top: 1px; }
+
+.quarry-actions { display: flex; gap: 6px; align-items: center; flex-shrink: 0; }
+
+.frentes-control {
+display: flex;
+align-items: center;
+gap: 6px;
+background: var(–stone-mid);
+border: 1px solid var(–stone-light);
+border-radius: 8px;
+padding: 5px 10px;
+}
+
+.frentes-label { font-size: 10px; color: var(–dust); letter-spacing: 1px; text-transform: uppercase; }
+
+.frentes-btn {
+width: 28px; height: 28px;
+background: var(–stone-light);
+border: none;
+border-radius: 4px;
+color: var(–cream);
+font-size: 18px;
+cursor: pointer;
+display: flex; align-items: center; justify-content: center;
+transition: background 0.2s;
+-webkit-tap-highlight-color: transparent;
+}
+
+.frentes-btn:active { background: var(–gold); color: var(–stone); }
+
+.frentes-value {
+font-family: ‘DM Mono’, monospace;
+font-size: 15px;
+color: var(–cream);
+min-width: 18px;
+text-align: center;
+}
+
+.btn-delete {
+width: 34px; height: 34px;
+background: transparent;
+border: 1px solid #c0392b44;
+border-radius: 6px;
+color: var(–red);
+font-size: 14px;
+cursor: pointer;
+display: flex; align-items: center; justify-content: center;
+transition: all 0.2s;
+-webkit-tap-highlight-color: transparent;
+}
+
+.btn-delete:active { background: var(–red); color: white; border-color: var(–red); }
+
+/* ADD QUARRY FORM */
+.add-form {
+display: grid;
+grid-template-columns: 1fr 64px;
+gap: 10px;
+margin-bottom: 10px;
+}
+
+.add-form-row2 {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 10px;
+}
+
+.btn-add {
+padding: 13px 16px;
+background: var(–gold);
+color: var(–stone);
+border: none;
+border-radius: 8px;
+font-family: ‘DM Sans’, sans-serif;
+font-size: 13px;
+font-weight: 700;
+letter-spacing: 1px;
+text-transform: uppercase;
+cursor: pointer;
+width: 100%;
+margin-top: 10px;
+-webkit-tap-highlight-color: transparent;
+}
+
+.btn-add:active { background: var(–gold-dark); }
+
+/* MODAL SENHA */
+.modal-overlay {
+display: none;
+position: fixed;
+inset: 0;
+background: rgba(0,0,0,0.75);
+z-index: 200;
+align-items: center;
+justify-content: center;
+}
+.modal-overlay.show { display: flex; }
+
+.modal {
+background: var(–stone-mid);
+border: 1px solid var(–stone-light);
+border-radius: 16px;
+padding: 32px 28px;
+width: 100%;
+max-width: 320px;
+margin: 20px;
+text-align: center;
+}
+
+.modal-icon { font-size: 30px; margin-bottom: 10px; }
+
+.modal-title {
+font-family: ‘Bebas Neue’, sans-serif;
+font-size: 26px;
+letter-spacing: 4px;
+color: var(–dust-light);
+margin-bottom: 5px;
+}
+
+.modal-sub {
+font-size: 12px;
+color: var(–dust);
+letter-spacing: 1px;
+margin-bottom: 20px;
+}
+
+.modal input[type=“password”] {
+width: 100%;
+background: var(–stone);
+border: 1px solid var(–stone-light);
+border-radius: 8px;
+color: var(–cream);
+font-family: ‘DM Mono’, monospace;
+font-size: 22px;
+letter-spacing: 8px;
+text-align: center;
+padding: 14px 16px;
+outline: none;
+transition: border-color 0.2s;
+margin-bottom: 12px;
+}
+
+.modal input[type=“password”]:focus { border-color: var(–gold); }
+
+.modal-error {
+font-size: 12px;
+color: var(–red);
+letter-spacing: 1px;
+margin-bottom: 12px;
+min-height: 16px;
+}
+
+.modal-btns { display: flex; gap: 10px; }
+
+.btn-confirm {
+flex: 1; padding: 13px;
+background: var(–gold); color: var(–stone);
+border: none; border-radius: 8px;
+font-family: ‘DM Sans’, sans-serif;
+font-size: 13px; font-weight: 700;
+letter-spacing: 1px; text-transform: uppercase;
+cursor: pointer;
+-webkit-tap-highlight-color: transparent;
+}
+
+.btn-confirm:active { background: var(–gold-dark); }
+
+.btn-cancel {
+flex: 1; padding: 13px;
+background: transparent; color: var(–dust);
+border: 1px solid var(–stone-light); border-radius: 8px;
+font-family: ‘DM Sans’, sans-serif;
+font-size: 13px; font-weight: 600;
+letter-spacing: 1px; text-transform: uppercase;
+cursor: pointer;
+-webkit-tap-highlight-color: transparent;
+}
+
+.btn-cancel:active { border-color: var(–dust); color: var(–cream); }
+
+/* TOAST */
+.toast {
+position: fixed;
+bottom: 28px;
+left: 50%;
+transform: translateX(-50%) translateY(80px);
+background: var(–green);
+color: white;
+padding: 12px 22px;
+border-radius: 8px;
+font-size: 13px;
+font-weight: 600;
+letter-spacing: 1px;
+transition: transform 0.3s;
+z-index: 999;
+white-space: nowrap;
+}
+
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+/* INSTALL BANNER */
+.install-banner {
+display: none;
+background: var(–stone-mid);
+border: 1px solid var(–gold);
+border-radius: 10px;
+padding: 14px 18px;
+margin-bottom: 20px;
+align-items: center;
+gap: 12px;
+cursor: pointer;
+}
+
+.install-banner.show { display: flex; }
+.install-banner-text { flex: 1; font-size: 13px; color: var(–dust-light); }
+.install-banner-text strong { display: block; color: var(–gold); font-size: 13px; margin-bottom: 2px; }
+.install-banner-btn {
+background: var(–gold); color: var(–stone);
+border: none; border-radius: 6px;
+padding: 8px 14px;
+font-size: 12px; font-weight: 700;
+letter-spacing: 1px; text-transform: uppercase;
+cursor: pointer; white-space: nowrap;
+-webkit-tap-highlight-color: transparent;
+}
+</style>
+
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">SHE</div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showPage('gerador')">Gerador</button>
+    <button class="nav-tab" onclick="showPage('admin')">Admin</button>
+  </div>
+</nav>
+
+<!-- GERADOR -->
+
+<div class="page active" id="page-gerador">
+  <div class="page-title">Gerador</div>
+  <div class="page-subtitle">Identificação de blocos</div>
+
+  <!-- Banner de instalação PWA -->
+
+  <div class="install-banner" id="install-banner" onclick="instalarApp()">
+    <div class="install-banner-text">
+      <strong>📲 Instalar como App</strong>
+      Adicione à tela inicial para usar offline
+    </div>
+    <button class="install-banner-btn">Instalar</button>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Dados do bloco</div>
+    <div class="form-grid" style="margin-bottom:14px">
+      <div class="field">
+        <label>Pedreira</label>
+        <select id="sel-pedreira" onchange="updateFrentes(); gerarCodigo()">
+          <option value="">Selecione...</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Frente de lavra</label>
+        <select id="sel-frente" onchange="gerarCodigo()">
+          <option value="">Selecione...</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-grid cols-3">
+      <div class="field">
+        <label>Nº no mês</label>
+        <input type="number" id="inp-seq" min="1" max="99" placeholder="Ex: 1" oninput="gerarCodigo()">
+      </div>
+      <div class="field">
+        <label>Mês</label>
+        <select id="sel-mes" onchange="gerarCodigo()">
+          <option value="">Selecione...</option>
+          <option value="1">Janeiro</option>
+          <option value="2">Fevereiro</option>
+          <option value="3">Março</option>
+          <option value="4">Abril</option>
+          <option value="5">Maio</option>
+          <option value="6">Junho</option>
+          <option value="7">Julho</option>
+          <option value="8">Agosto</option>
+          <option value="9">Setembro</option>
+          <option value="10">Outubro</option>
+          <option value="11">Novembro</option>
+          <option value="12">Dezembro</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Ano</label>
+        <select id="inp-ano" onchange="gerarCodigo()">
+          <option value="">Selecione...</option>
+          <option value="2025">2025</option>
+          <option value="2026">2026</option>
+          <option value="2027">2027</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Código gerado</div>
+    <div class="result-box">
+      <div class="result-label">Código do bloco</div>
+      <div class="result-code" id="result-code">——</div>
+      <div class="result-breakdown" id="result-breakdown"></div>
+      <button class="copy-btn" onclick="copiarCodigo()">Copiar código</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+
+<div class="page" id="page-admin">
+  <div class="page-title">Admin</div>
+  <div class="page-subtitle">Gerenciar pedreiras</div>
+
+  <div class="card">
+    <div class="card-title">Adicionar pedreira</div>
+    <div class="add-form">
+      <div class="field">
+        <label>Nome da pedreira</label>
+        <input type="text" id="inp-nome" placeholder="Ex: Monte Verde">
+      </div>
+      <div class="field">
+        <label>Código</label>
+        <input type="text" id="inp-codigo" maxlength="1" placeholder="V" style="text-transform:uppercase;text-align:center">
+      </div>
+    </div>
+    <div class="add-form-row2">
+      <div class="field">
+        <label>Nº de frentes</label>
+        <input type="number" id="inp-frentes" min="1" max="20" value="2">
+      </div>
+      <div class="field" style="justify-content:flex-end">
+        <button class="btn-add" onclick="adicionarPedreira()">+ Adicionar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Pedreiras cadastradas</div>
+    <div class="quarry-list" id="quarry-list"></div>
+  </div>
+</div>
+
+<!-- MODAL SENHA ADMIN -->
+
+<div class="modal-overlay" id="modal-senha">
+  <div class="modal">
+    <div class="modal-icon">🔒</div>
+    <div class="modal-title">Admin</div>
+    <div class="modal-sub">Digite a senha para continuar</div>
+    <input type="password" id="inp-senha" placeholder="••••" maxlength="20"
+      onkeydown="if(event.key==='Enter') confirmarSenha()">
+    <div class="modal-error" id="senha-erro"></div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="fecharModal()">Cancelar</button>
+      <button class="btn-confirm" onclick="confirmarSenha()">Entrar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── SERVICE WORKER ───────────────────────────────────────────────
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  });
+}
+
+// ─── PWA INSTALL ─────────────────────────────────────────────────
+let deferredPrompt = null;
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('install-banner').classList.add('show');
+});
+
+window.addEventListener('appinstalled', () => {
+  document.getElementById('install-banner').classList.remove('show');
+  deferredPrompt = null;
+});
+
+function instalarApp() {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(() => {
+    deferredPrompt = null;
+    document.getElementById('install-banner').classList.remove('show');
+  });
+}
+
+// ─── TABELA DE CONVERSÃO ──────────────────────────────────────────
+const TABLE = { '0':'A','1':'M','2':'N','3':'O','4':'S','5':'T','6':'U','7':'K','8':'W','9':'Y' };
+
+function encode(n) {
+  return String(n).split('').map(d => TABLE[d]).join('');
+}
+
+// ─── DADOS ────────────────────────────────────────────────────────
+const DEFAULT_QUARRIES = [
+  { nome: 'Aurora Borealis', codigo: 'A', frentes: 2 },
+  { nome: 'Zurich',          codigo: 'Z', frentes: 2 },
+  { nome: 'Amalfi',          codigo: 'F', frentes: 2 },
+  { nome: 'Aura Green',      codigo: 'G', frentes: 2 },
+];
+
+function loadQuarries() {
+  try {
+    const saved = localStorage.getItem('she_quarries');
+    return saved ? JSON.parse(saved) : DEFAULT_QUARRIES;
+  } catch { return DEFAULT_QUARRIES; }
+}
+
+function saveQuarries(q) {
+  try { localStorage.setItem('she_quarries', JSON.stringify(q)); } catch {}
+}
+
+let quarries = loadQuarries();
+
+// ─── SENHA ADMIN ──────────────────────────────────────────────────
+const ADMIN_PASS = 'SHE';
+let adminUnlocked = false;
+
+function showPage(id) {
+  if (id === 'admin' && !adminUnlocked) {
+    document.getElementById('inp-senha').value = '';
+    document.getElementById('senha-erro').textContent = '';
+    document.getElementById('modal-senha').classList.add('show');
+    setTimeout(() => document.getElementById('inp-senha').focus(), 100);
+    window._pendingPage = id;
+    return;
+  }
+  _navigateTo(id);
+}
+
+function confirmarSenha() {
+  const val = document.getElementById('inp-senha').value;
+  if (val === ADMIN_PASS) {
+    adminUnlocked = true;
+    fecharModal();
+    _navigateTo(window._pendingPage);
+  } else {
+    document.getElementById('senha-erro').textContent = 'Senha incorreta.';
+    document.getElementById('inp-senha').value = '';
+    document.getElementById('inp-senha').focus();
+  }
+}
+
+function fecharModal() {
+  document.getElementById('modal-senha').classList.remove('show');
+}
+
+function _navigateTo(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  document.querySelectorAll('.nav-tab').forEach(t => {
+    if (t.getAttribute('onclick') && t.getAttribute('onclick').includes("'" + id + "'")) {
+      t.classList.add('active');
+    }
+  });
+  if (id === 'admin') { renderAdmin(); adminUnlocked = false; }
+  if (id === 'gerador') populateGerador();
+}
+
+// ─── GERADOR ─────────────────────────────────────────────────────
+function populateGerador() {
+  const sel = document.getElementById('sel-pedreira');
+  const current = sel.value;
+  sel.innerHTML = '<option value="">Selecione...</option>';
+  quarries.forEach((q, i) => {
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = q.nome;
+    sel.appendChild(opt);
+  });
+  if (current !== '') sel.value = current;
+  updateFrentes();
+}
+
+function updateFrentes() {
+  const idx = document.getElementById('sel-pedreira').value;
+  const sel = document.getElementById('sel-frente');
+  sel.innerHTML = '<option value="">Selecione...</option>';
+  if (idx === '') return;
+  const q = quarries[idx];
+  for (let i = 1; i <= q.frentes; i++) {
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = 'Frente ' + i;
+    sel.appendChild(opt);
+  }
+}
+
+function gerarCodigo() {
+  const idx    = document.getElementById('sel-pedreira').value;
+  const frente = document.getElementById('sel-frente').value;
+  const seq    = document.getElementById('inp-seq').value;
+  const mes    = document.getElementById('sel-mes').value;
+  const ano    = document.getElementById('inp-ano').value;
+
+  const codeEl      = document.getElementById('result-code');
+  const breakdownEl = document.getElementById('result-breakdown');
+
+  if (!idx || !frente || !seq || !mes || !ano) {
+    codeEl.textContent = '——';
+    breakdownEl.innerHTML = '';
+    return;
+  }
+
+  const q = quarries[idx];
+  const partPedreira = q.codigo;
+  const partFrente   = encode(frente);
+  const partSeq      = encode(parseInt(seq));
+  const partMes      = encode(parseInt(mes));
+  const lastDigAno   = String(ano).slice(-1);
+  const partAno      = encode(lastDigAno);
+
+  const full = partPedreira + partFrente + partSeq + partMes + partAno;
+  codeEl.textContent = full;
+
+  breakdownEl.innerHTML = `
+    <div class="breakdown-item">Pedreira <span>${partPedreira}</span></div>
+    <div class="breakdown-item">Frente <span>${partFrente}</span></div>
+    <div class="breakdown-item">Nº mês <span>${partSeq}</span></div>
+    <div class="breakdown-item">Mês <span>${partMes}</span></div>
+    <div class="breakdown-item">Ano <span>${partAno}</span></div>
+  `;
+}
+
+function copiarCodigo() {
+  const code = document.getElementById('result-code').textContent;
+  if (code === '——') return;
+  try {
+    navigator.clipboard.writeText(code);
+    showToast('Copiado: ' + code);
+  } catch {
+    showToast('Código: ' + code);
+  }
+}
+
+// ─── ADMIN ────────────────────────────────────────────────────────
+function renderAdmin() {
+  const list = document.getElementById('quarry-list');
+  if (quarries.length === 0) {
+    list.innerHTML = '<p style="color:var(--dust);font-size:13px;text-align:center;padding:20px">Nenhuma pedreira cadastrada.</p>';
+    return;
+  }
+  list.innerHTML = quarries.map((q, i) => `
+    <div class="quarry-item">
+      <div class="quarry-info">
+        <div class="quarry-badge">${q.codigo}</div>
+        <div>
+          <div class="quarry-name">${q.nome}</div>
+          <div class="quarry-meta">${q.frentes} frente${q.frentes > 1 ? 's' : ''}</div>
+        </div>
+      </div>
+      <div class="quarry-actions">
+        <div class="frentes-control">
+          <button class="frentes-btn" onclick="alterarFrentes(${i}, -1)">−</button>
+          <span class="frentes-value" id="fv-${i}">${q.frentes}</span>
+          <button class="frentes-btn" onclick="alterarFrentes(${i}, +1)">+</button>
+        </div>
+        <button class="btn-delete" onclick="removerPedreira(${i})">✕</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function alterarFrentes(idx, delta) {
+  quarries[idx].frentes = Math.max(1, quarries[idx].frentes + delta);
+  saveQuarries(quarries);
+  document.getElementById('fv-' + idx).textContent = quarries[idx].frentes;
+}
+
+function adicionarPedreira() {
+  const nome    = document.getElementById('inp-nome').value.trim();
+  const codigo  = document.getElementById('inp-codigo').value.trim().toUpperCase();
+  const frentes = parseInt(document.getElementById('inp-frentes').value) || 2;
+
+  if (!nome || !codigo) { showToast('Preencha nome e código.'); return; }
+  if (quarries.find(q => q.codigo === codigo)) { showToast('Código já em uso.'); return; }
+
+  quarries.push({ nome, codigo, frentes });
+  saveQuarries(quarries);
+  renderAdmin();
+
+  document.getElementById('inp-nome').value    = '';
+  document.getElementById('inp-codigo').value  = '';
+  document.getElementById('inp-frentes').value = '2';
+  showToast('Pedreira adicionada!');
+}
+
+function removerPedreira(idx) {
+  if (!confirm(`Remover "${quarries[idx].nome}"?`)) return;
+  quarries.splice(idx, 1);
+  saveQuarries(quarries);
+  renderAdmin();
+  showToast('Pedreira removida.');
+}
+
+// ─── TOAST ────────────────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────
+populateGerador();
+</script>
+
+</body>
+</html>
