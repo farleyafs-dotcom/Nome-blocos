@@ -675,13 +675,50 @@ const DEFAULT_QUARRIES = [
   { nome: 'Zurich',          codigo: 'Z', frentes: 2 },
   { nome: 'Amalfi',          codigo: 'F', frentes: 2 },
   { nome: 'Aura Green',      codigo: 'G', frentes: 2 },
+  { nome: 'Lagoa Grande (Laguna Black)', codigo: 'L', frentes: 1 },
 ];
+
+// Siglas das pedreiras-padrão que já existiam antes da rotina de auto-injeção.
+// Na primeira execução, evita ressuscitar um default que o usuário tenha
+// apagado de propósito antes desta atualização.
+const LEGACY_DEFAULT_CODES = ['A', 'Z', 'F', 'G'];
 
 function loadQuarries() {
   try {
     const saved = localStorage.getItem('she_quarries');
-    return saved ? JSON.parse(saved) : DEFAULT_QUARRIES;
-  } catch { return DEFAULT_QUARRIES; }
+    if (!saved) return DEFAULT_QUARRIES.slice();
+    const list = JSON.parse(saved);
+    return mergeNewDefaults(Array.isArray(list) ? list : DEFAULT_QUARRIES.slice());
+  } catch { return DEFAULT_QUARRIES.slice(); }
+}
+
+// Injeta automaticamente pedreiras-padrão novas em aparelhos que já têm a lista
+// salva no localStorage. Um registro de siglas já "semeadas" evita reinjetar
+// uma pedreira que o usuário removeu de propósito.
+function mergeNewDefaults(list) {
+  let seeded;
+  try { seeded = JSON.parse(localStorage.getItem('she_seeded_codes')); }
+  catch { seeded = null; }
+  if (!Array.isArray(seeded)) {
+    // Primeira vez: considera como já semeadas as siglas atuais + as antigas
+    // padrão, pra não reintroduzir defaults antigos que o usuário apagou.
+    seeded = Array.from(new Set([...list.map(q => q.codigo), ...LEGACY_DEFAULT_CODES]));
+  }
+
+  let changed = false;
+  DEFAULT_QUARRIES.forEach(def => {
+    if (!seeded.includes(def.codigo)) {
+      seeded.push(def.codigo);
+      if (!list.some(q => q.codigo === def.codigo)) {
+        list.push({ ...def });
+        changed = true;
+      }
+    }
+  });
+
+  try { localStorage.setItem('she_seeded_codes', JSON.stringify(seeded)); } catch {}
+  if (changed) saveQuarries(list);
+  return list;
 }
 
 function saveQuarries(q) {
