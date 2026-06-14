@@ -1,4 +1,4 @@
-const CACHE = 'she-blocos-v3';
+const CACHE = 'she-blocos-v4';
 const ASSETS = [
   '/Nome-blocos/',
   '/Nome-blocos/index.html',

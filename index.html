@@ -674,7 +674,7 @@ const DEFAULT_QUARRIES = [
   { nome: 'Aurora Borealis', codigo: 'A', frentes: 2 },
   { nome: 'Zurich',          codigo: 'Z', frentes: 2 },
   { nome: 'Amalfi',          codigo: 'F', frentes: 2 },
-  { nome: 'Aura Green',      codigo: 'G', frentes: 2 },
+  { nome: 'Positano',        codigo: 'G', frentes: 1 },
   { nome: 'Lagoa Grande (Laguna Black)', codigo: 'L', frentes: 1 },
 ];
 
@@ -713,6 +713,16 @@ function mergeNewDefaults(list) {
         list.push({ ...def });
         changed = true;
       }
+    }
+  });
+
+  // Mantém o NOME das pedreiras-padrão em dia. O app não permite renomear,
+  // então a sigla manda no nome. Não toca nas frentes (isso o usuário edita).
+  DEFAULT_QUARRIES.forEach(def => {
+    const q = list.find(x => x.codigo === def.codigo);
+    if (q && q.nome !== def.nome) {
+      q.nome = def.nome;
+      changed = true;
     }
   });
 
