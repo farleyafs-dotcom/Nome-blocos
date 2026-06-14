@@ -446,6 +446,34 @@
 
   .btn-cancel:active { border-color: var(--dust); color: var(--cream); }
 
+  /* MEDIDAS */
+  .medida-group { margin-bottom: 16px; }
+  .medida-group:last-child { margin-bottom: 0; }
+  .medida-group-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--dust);
+    margin-bottom: 8px;
+  }
+
+  /* PREVIEW WHATSAPP */
+  .wpp-preview {
+    background: var(--stone);
+    border: 1px solid var(--stone-light);
+    border-radius: 8px;
+    padding: 16px;
+    color: var(--dust-light);
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-break: break-word;
+    margin-bottom: 16px;
+    min-height: 44px;
+  }
+
   /* TOAST */
   .toast {
     position: fixed;
@@ -569,6 +597,37 @@
   </div>
 
   <div class="card">
+    <div class="card-title">Medidas (m)</div>
+
+    <div class="medida-group">
+      <div class="medida-group-label">Brutas máximas (peso)</div>
+      <div class="form-grid cols-3">
+        <div class="field"><label>Comp.</label><input type="number" inputmode="decimal" step="0.01" id="inp-max-c" placeholder="0,00" oninput="atualizarMensagem()"></div>
+        <div class="field"><label>Alt.</label><input type="number" inputmode="decimal" step="0.01" id="inp-max-a" placeholder="0,00" oninput="atualizarMensagem()"></div>
+        <div class="field"><label>Larg.</label><input type="number" inputmode="decimal" step="0.01" id="inp-max-l" placeholder="0,00" oninput="atualizarMensagem()"></div>
+      </div>
+    </div>
+
+    <div class="medida-group">
+      <div class="medida-group-label">Brutas mínimas</div>
+      <div class="form-grid cols-3">
+        <div class="field"><label>Comp.</label><input type="number" inputmode="decimal" step="0.01" id="inp-min-c" placeholder="0,00" oninput="atualizarMensagem()"></div>
+        <div class="field"><label>Alt.</label><input type="number" inputmode="decimal" step="0.01" id="inp-min-a" placeholder="0,00" oninput="atualizarMensagem()"></div>
+        <div class="field"><label>Larg.</label><input type="number" inputmode="decimal" step="0.01" id="inp-min-l" placeholder="0,00" oninput="atualizarMensagem()"></div>
+      </div>
+    </div>
+
+    <div class="medida-group">
+      <div class="medida-group-label">Líquidas</div>
+      <div class="form-grid cols-3">
+        <div class="field"><label>Comp.</label><input type="number" inputmode="decimal" step="0.01" id="inp-liq-c" placeholder="0,00" oninput="atualizarMensagem()"></div>
+        <div class="field"><label>Alt.</label><input type="number" inputmode="decimal" step="0.01" id="inp-liq-a" placeholder="0,00" oninput="atualizarMensagem()"></div>
+        <div class="field"><label>Larg.</label><input type="number" inputmode="decimal" step="0.01" id="inp-liq-l" placeholder="0,00" oninput="atualizarMensagem()"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
     <div class="card-title">Código gerado</div>
     <div class="result-box">
       <div class="result-label">Código do bloco</div>
@@ -576,6 +635,12 @@
       <div class="result-breakdown" id="result-breakdown"></div>
       <button class="copy-btn" onclick="copiarCodigo()">Copiar código</button>
     </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Mensagem p/ WhatsApp</div>
+    <pre class="wpp-preview" id="wpp-preview">——</pre>
+    <button class="copy-btn" onclick="copiarWhatsapp()">Copiar p/ WhatsApp</button>
   </div>
 </div>
 
@@ -675,7 +740,7 @@ const DEFAULT_QUARRIES = [
   { nome: 'Zurich',          codigo: 'Z', frentes: 2 },
   { nome: 'Amalfi',          codigo: 'F', frentes: 2 },
   { nome: 'Positano',        codigo: 'G', frentes: 1 },
-  { nome: 'Lagoa Grande (Laguna Black)', codigo: 'L', frentes: 1 },
+  { nome: 'Laguna Black', codigo: 'L', frentes: 1 },
 ];
 
 // Siglas das pedreiras-padrão que já existiam antes da rotina de auto-injeção.
@@ -825,6 +890,7 @@ function gerarCodigo() {
   if (!idx || !frente || !seq || !mes || !ano) {
     codeEl.textContent = '——';
     breakdownEl.innerHTML = '';
+    atualizarMensagem();
     return;
   }
 
@@ -846,6 +912,8 @@ function gerarCodigo() {
     <div class="breakdown-item">Mês <span>${partMes}</span></div>
     <div class="breakdown-item">Ano <span>${partAno}</span></div>
   `;
+
+  atualizarMensagem();
 }
 
 function copiarCodigo() {
@@ -856,6 +924,59 @@ function copiarCodigo() {
     showToast('Copiado: ' + code);
   } catch {
     showToast('Código: ' + code);
+  }
+}
+
+// ─── MEDIDAS / MENSAGEM WHATSAPP ─────────────────────────────────
+function fmtNum(v) {
+  const n = parseFloat(String(v).replace(',', '.'));
+  if (!isFinite(n) || n <= 0) return null;
+  return n.toFixed(2).replace('.', ',');
+}
+
+// Lê os 3 campos de uma medida (max/min/liq). Só retorna a linha se os
+// três valores estiverem preenchidos; senão null (a linha é omitida).
+function fmtMedida(prefix) {
+  const c = fmtNum(document.getElementById('inp-' + prefix + '-c').value);
+  const a = fmtNum(document.getElementById('inp-' + prefix + '-a').value);
+  const l = fmtNum(document.getElementById('inp-' + prefix + '-l').value);
+  if (!c || !a || !l) return null;
+  return c + ' x ' + a + ' x ' + l;
+}
+
+function buildWhatsapp() {
+  const code = document.getElementById('result-code').textContent;
+  const idx = document.getElementById('sel-pedreira').value;
+  if (code === '——' || idx === '') return null;
+
+  const material = quarries[idx].nome;
+  let txt = material + '\nBloco ' + code + '\n';
+
+  const max = fmtMedida('max');
+  const min = fmtMedida('min');
+  const liq = fmtMedida('liq');
+  if (max || min || liq) {
+    txt += '\n';
+    if (max) txt += max + ' peso\n';
+    if (min) txt += min + ' bruta -\n';
+    if (liq) txt += liq + ' liq\n';
+  }
+  return txt.replace(/\n+$/, '');
+}
+
+function atualizarMensagem() {
+  const txt = buildWhatsapp();
+  document.getElementById('wpp-preview').textContent = txt || '——';
+}
+
+function copiarWhatsapp() {
+  const txt = buildWhatsapp();
+  if (!txt) { showToast('Preencha pedreira, frente, nº, mês e ano.'); return; }
+  try {
+    navigator.clipboard.writeText(txt);
+    showToast('Copiado p/ WhatsApp!');
+  } catch {
+    showToast('Não foi possível copiar.');
   }
 }
 
@@ -929,6 +1050,7 @@ function showToast(msg) {
 
 // ─── INIT ─────────────────────────────────────────────────────────
 populateGerador();
+atualizarMensagem();
 </script>
 </body>
 </html>
