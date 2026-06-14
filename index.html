@@ -550,13 +550,13 @@
     <div class="form-grid" style="margin-bottom:14px">
       <div class="field">
         <label>Pedreira</label>
-        <select id="sel-pedreira" onchange="updateFrentes(); gerarCodigo()">
+        <select id="sel-pedreira" onchange="updateFrentes(); atualizarMensagem()">
           <option value="">Selecione...</option>
         </select>
       </div>
       <div class="field">
         <label>Frente de lavra</label>
-        <select id="sel-frente" onchange="gerarCodigo()">
+        <select id="sel-frente" onchange="atualizarMensagem()">
           <option value="">Selecione...</option>
         </select>
       </div>
@@ -564,11 +564,11 @@
     <div class="form-grid cols-3">
       <div class="field">
         <label>Nº bloco do mês</label>
-        <input type="number" id="inp-seq" min="1" max="99" placeholder="Ex: 1" oninput="gerarCodigo()">
+        <input type="number" id="inp-seq" min="1" max="99" placeholder="Ex: 1" oninput="atualizarMensagem()">
       </div>
       <div class="field">
         <label>Mês</label>
-        <select id="sel-mes" onchange="gerarCodigo()">
+        <select id="sel-mes" onchange="atualizarMensagem()">
           <option value="">Selecione...</option>
           <option value="1">Janeiro</option>
           <option value="2">Fevereiro</option>
@@ -586,7 +586,7 @@
       </div>
       <div class="field">
         <label>Ano</label>
-        <select id="inp-ano" onchange="gerarCodigo()">
+        <select id="inp-ano" onchange="atualizarMensagem()">
           <option value="">Selecione...</option>
           <option value="2025">2025</option>
           <option value="2026">2026</option>
@@ -602,38 +602,28 @@
     <div class="medida-group">
       <div class="medida-group-label">Brutas máximas (peso)</div>
       <div class="form-grid cols-3">
-        <div class="field"><label>Comp.</label><input type="number" inputmode="decimal" step="0.01" id="inp-max-c" placeholder="0,00" oninput="atualizarMensagem()"></div>
-        <div class="field"><label>Alt.</label><input type="number" inputmode="decimal" step="0.01" id="inp-max-a" placeholder="0,00" oninput="atualizarMensagem()"></div>
-        <div class="field"><label>Larg.</label><input type="number" inputmode="decimal" step="0.01" id="inp-max-l" placeholder="0,00" oninput="atualizarMensagem()"></div>
+        <div class="field"><label>Comp.</label><input type="text" inputmode="numeric" id="inp-max-c" placeholder="0,00" oninput="onMedidaInput(this, 400)"></div>
+        <div class="field"><label>Alt.</label><input type="text" inputmode="numeric" id="inp-max-a" placeholder="0,00" oninput="onMedidaInput(this, 250)"></div>
+        <div class="field"><label>Larg.</label><input type="text" inputmode="numeric" id="inp-max-l" placeholder="0,00" oninput="onMedidaInput(this, 250)"></div>
       </div>
     </div>
 
     <div class="medida-group">
       <div class="medida-group-label">Brutas mínimas</div>
       <div class="form-grid cols-3">
-        <div class="field"><label>Comp.</label><input type="number" inputmode="decimal" step="0.01" id="inp-min-c" placeholder="0,00" oninput="atualizarMensagem()"></div>
-        <div class="field"><label>Alt.</label><input type="number" inputmode="decimal" step="0.01" id="inp-min-a" placeholder="0,00" oninput="atualizarMensagem()"></div>
-        <div class="field"><label>Larg.</label><input type="number" inputmode="decimal" step="0.01" id="inp-min-l" placeholder="0,00" oninput="atualizarMensagem()"></div>
+        <div class="field"><label>Comp.</label><input type="text" inputmode="numeric" id="inp-min-c" placeholder="0,00" oninput="onMedidaInput(this, 400)"></div>
+        <div class="field"><label>Alt.</label><input type="text" inputmode="numeric" id="inp-min-a" placeholder="0,00" oninput="onMedidaInput(this, 250)"></div>
+        <div class="field"><label>Larg.</label><input type="text" inputmode="numeric" id="inp-min-l" placeholder="0,00" oninput="onMedidaInput(this, 250)"></div>
       </div>
     </div>
 
     <div class="medida-group">
       <div class="medida-group-label">Líquidas</div>
       <div class="form-grid cols-3">
-        <div class="field"><label>Comp.</label><input type="number" inputmode="decimal" step="0.01" id="inp-liq-c" placeholder="0,00" oninput="atualizarMensagem()"></div>
-        <div class="field"><label>Alt.</label><input type="number" inputmode="decimal" step="0.01" id="inp-liq-a" placeholder="0,00" oninput="atualizarMensagem()"></div>
-        <div class="field"><label>Larg.</label><input type="number" inputmode="decimal" step="0.01" id="inp-liq-l" placeholder="0,00" oninput="atualizarMensagem()"></div>
+        <div class="field"><label>Comp.</label><input type="text" inputmode="numeric" id="inp-liq-c" placeholder="0,00" oninput="onMedidaInput(this, 400)"></div>
+        <div class="field"><label>Alt.</label><input type="text" inputmode="numeric" id="inp-liq-a" placeholder="0,00" oninput="onMedidaInput(this, 250)"></div>
+        <div class="field"><label>Larg.</label><input type="text" inputmode="numeric" id="inp-liq-l" placeholder="0,00" oninput="onMedidaInput(this, 250)"></div>
       </div>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-title">Código gerado</div>
-    <div class="result-box">
-      <div class="result-label">Código do bloco</div>
-      <div class="result-code" id="result-code">——</div>
-      <div class="result-breakdown" id="result-breakdown"></div>
-      <button class="copy-btn" onclick="copiarCodigo()">Copiar código</button>
     </div>
   </div>
 
@@ -877,57 +867,35 @@ function updateFrentes() {
   }
 }
 
-function gerarCodigo() {
+// Monta o código do bloco a partir dos dados selecionados. Vazio se faltar algo.
+function computeCodigo() {
   const idx    = document.getElementById('sel-pedreira').value;
   const frente = document.getElementById('sel-frente').value;
   const seq    = document.getElementById('inp-seq').value;
   const mes    = document.getElementById('sel-mes').value;
   const ano    = document.getElementById('inp-ano').value;
 
-  const codeEl      = document.getElementById('result-code');
-  const breakdownEl = document.getElementById('result-breakdown');
-
-  if (!idx || !frente || !seq || !mes || !ano) {
-    codeEl.textContent = '——';
-    breakdownEl.innerHTML = '';
-    atualizarMensagem();
-    return;
-  }
+  if (!idx || !frente || !seq || !mes || !ano) return '';
 
   const q = quarries[idx];
-  const partPedreira = q.codigo;
-  const partFrente   = encode(frente);
-  const partSeq      = encode(parseInt(seq));
-  const partMes      = encode(parseInt(mes));
-  const lastDigAno   = String(ano).slice(-1);
-  const partAno      = encode(lastDigAno);
-
-  const full = partPedreira + partFrente + partSeq + partMes + partAno;
-  codeEl.textContent = full;
-
-  breakdownEl.innerHTML = `
-    <div class="breakdown-item">Pedreira <span>${partPedreira}</span></div>
-    <div class="breakdown-item">Frente <span>${partFrente}</span></div>
-    <div class="breakdown-item">Nº mês <span>${partSeq}</span></div>
-    <div class="breakdown-item">Mês <span>${partMes}</span></div>
-    <div class="breakdown-item">Ano <span>${partAno}</span></div>
-  `;
-
-  atualizarMensagem();
-}
-
-function copiarCodigo() {
-  const code = document.getElementById('result-code').textContent;
-  if (code === '——') return;
-  try {
-    navigator.clipboard.writeText(code);
-    showToast('Copiado: ' + code);
-  } catch {
-    showToast('Código: ' + code);
-  }
+  return q.codigo
+    + encode(frente)
+    + encode(parseInt(seq))
+    + encode(parseInt(mes))
+    + encode(String(ano).slice(-1));
 }
 
 // ─── MEDIDAS / MENSAGEM WHATSAPP ─────────────────────────────────
+// Entrada estilo "centavos": o usuário digita só números e o campo formata
+// com 2 casas decimais automaticamente. Ex: 3,4,0 -> "3,40".
+// maxCents limita o valor (ex: 400 = 4,00 m; 250 = 2,50 m).
+function onMedidaInput(el, maxCents) {
+  const digits = el.value.replace(/\D/g, '').replace(/^0+/, '');
+  let cents = digits === '' ? 0 : parseInt(digits, 10);
+  if (cents > maxCents) cents = maxCents;
+  el.value = cents === 0 ? '' : (cents / 100).toFixed(2).replace('.', ',');
+  atualizarMensagem();
+}
 function fmtNum(v) {
   const n = parseFloat(String(v).replace(',', '.'));
   if (!isFinite(n) || n <= 0) return null;
@@ -945,9 +913,9 @@ function fmtMedida(prefix) {
 }
 
 function buildWhatsapp() {
-  const code = document.getElementById('result-code').textContent;
+  const code = computeCodigo();
   const idx = document.getElementById('sel-pedreira').value;
-  if (code === '——' || idx === '') return null;
+  if (!code || idx === '') return null;
 
   const material = quarries[idx].nome;
   let txt = material + '\nBloco ' + code + '\n';
